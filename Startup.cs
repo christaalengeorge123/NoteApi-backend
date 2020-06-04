@@ -17,6 +17,8 @@ namespace noteApi
     public class Startup
 
     {
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration) => Configuration = configuration;
@@ -24,6 +26,7 @@ namespace noteApi
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             services.AddDbContext<NoteContext>
             (opt => opt.UseSqlServer(Configuration["Data:NoteAPIConnection:ConnectionString"]));
 
@@ -39,6 +42,10 @@ namespace noteApi
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCors(
+                options => options.WithOrigins("http://localhost:8080").AllowAnyMethod()
+                );
+
             app.UseMvc();
             app.UseRouting();
 
@@ -47,7 +54,7 @@ namespace noteApi
                 endpoints.MapGet("/", async context =>
                 {
                     await context.Response.WriteAsync("Hello World!");
-                });
+                }).RequireCors(MyAllowSpecificOrigins);
             });
         }
     }
