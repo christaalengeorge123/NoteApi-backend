@@ -63,6 +63,16 @@ namespace noteApi.Controllers
             _context.SaveChanges();
             return noteItem;
         }
+        [HttpGet("{id}")]
+        public ActionResult<Note> GetNoteItem(int id)
+        {
+            var noteItem = _context.NoteItems.Find(id);
+            if (noteItem == null)
+            {
+                return NotFound();
+            }
+            return noteItem;
+        }
     }
 }
 
